@@ -25,20 +25,20 @@ struct FTank
 	}
 
 	// Editable in Initial Conditions
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "FDM Tank")
 		double FuelDensityPoundsPerGallon = 6.6;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "FDM Tank")
 		double ContentGallons = 300;
 
 
 	// Basic Properties
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "FDM Tank")
 		double CapacityGallons = 300;
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "FDM Tank")
 		double FillPercentage = 100;
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "FDM Tank")
 		double TemperatureCelcius = 0;
 
 	// Possible Other Functions - Fill, Drain... 
@@ -63,45 +63,45 @@ struct FGear
 	/**
 	 * 1 = Down, 0 = up
 	*/
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "FDM Gear")
 	double NormalizedPosition = 1;
 
     /*
     * Doesn't exist in JSBSim, but need to be set in Editor in case you want to do separate gear animations 
     */
-    UPROPERTY(BlueprintReadOnly, EditAnywhere)
+    UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "FDM Gear")
 	bool IsFrontBogey = false;
 
     /*
     * Doesn't exist in JSBSim, but need to be set in Editor in case you want to do separate gear animations
     */
-    UPROPERTY(BlueprintReadOnly, EditAnywhere)
+    UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "FDM Gear")
 	bool IsRearBogey = false;
 
 
 	// Basic Properties from JSBSim - Read Only
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "FDM Gear")
 	FString Name = "";
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "FDM Gear")
 	bool IsBogey = false;
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "FDM Gear")
 	bool HasWeightOnWheel = false;
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "FDM Gear")
 	double WheelRollLinearVelocityMetersPerSec = 0.0f;
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "FDM Gear")
 	bool IsUp = false;
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "FDM Gear")
 	bool IsDown = true;
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "FDM Gear")
 	FVector RelativeLocation = FVector(FVector::ZeroVector);
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "FDM Gear")
 	FVector Force = FVector(FVector::ZeroVector);
 
 	// Possible Other Functions - Steering, Compression... 
@@ -149,44 +149,44 @@ struct FEngineCommand
 	// Common Engine Commands
 
     /* Normalized [0..1] value expected */
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "FDM Engine")
 	double Throttle = 0.0f;
 	
     /* Normalized [0..1] value expected */
-    UPROPERTY(BlueprintReadWrite, EditAnywhere)
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "FDM Engine")
 	double Mixture = 0.0f;
 	
-    UPROPERTY(BlueprintReadWrite, EditAnywhere)
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "FDM Engine")
 	bool Starter = false;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "FDM Engine")
 	bool Running = false;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "FDM Engine")
 	double PropellerAdvance = 0.0f;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "FDM Engine")
 	bool PropellerFeather = false;
 
 	// Piston Engine Commands
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "FDM Engine")
     EMagnetosMode Magnetos = EMagnetosMode::Off;
 
 	// Turbine Engine Commands
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "FDM Engine")
 	bool Augmentation = false;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "FDM Engine")
 	bool Injection = false;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "FDM Engine")
 	int32 Ignition = 0;
 	
 	// Turbine & TurboPropeller Engine Commands
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "FDM Engine")
 	bool Reverse = false;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "FDM Engine")
 	bool CutOff = false;
 	
 	// TurboPropeller Engine Commands
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "FDM Engine")
 	bool GeneratorPower = false;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "FDM Engine")
 	bool Condition = false;
 
 
@@ -210,39 +210,39 @@ struct FEngineState
 	}
 
 	// Type
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "FDM EngineState")
 	EEngineType EngineType = EEngineType::Turbine;
 
 	// Common Engine States
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "FDM EngineState")
 	bool Starter = false;
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "FDM EngineState")
 	bool Running = false;
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "FDM EngineState")
 	double Thrust = 0;
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "FDM EngineState")
 	double EngineRPM = 0;
 	
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "FDM EngineState")
 	double N1 = 0; // Turbine
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "FDM EngineState")
 	double N2 = 0; // Turbine
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "FDM EngineState")
 	bool Augmentation = false; // Turbine
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "FDM EngineState")
 	bool Reversed = false; // Turbine + TurboProp
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "FDM EngineState")
 	bool Injection = false; // Turbine
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "FDM EngineState")
 	bool CutOff = false; // Turbine + TurboProp
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "FDM EngineState")
 	int Ignition = 0; // Turbine + 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "FDM EngineState")
 	bool GeneratorPower = false; // TurboProp
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "FDM EngineState")
 	bool Condition = false; // TurboProp
 
-    UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+    UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "FDM EngineState")
     EMagnetosMode Magnetos = EMagnetosMode::Off; // Piston
     
 	FString GetDebugMessage()
@@ -276,57 +276,57 @@ struct FFlightControlCommands
 	// Basics
 
     /* Normalized [-1..1] value expected */
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Commands")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "FDM FC Commands")
 	double Aileron = 0;
     /* Normalized [-1..1] value expected */
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Commands")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "FDM FC Commands")
 	double Elevator = 0;
      /* Normalized [-1..1] value expected */
-    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Commands")
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "FDM FC Commands")
 	double Rudder = 0;
 
     /* Normalized [-1..1] value expected */
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Commands")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "FDM FC Commands")
 	double YawTrim = 0;
     /* Normalized [-1..1] value expected */
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Commands")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "FDM FC Commands")
 	double PitchTrim = 0;
     /* Normalized [-1..1] value expected */
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Commands")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "FDM FC Commands")
 	double RollTrim = 0;
 
 	// Wheels
 
     /* Normalized [-1..1] value expected */
-    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Commands")
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "FDM FC Commands")
     double Steer = 0; // == Rudder??
     /* Normalized [0..1] value expected */
-    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Commands")
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "FDM FC Commands")
     double LeftBrake = 0;
     /* Normalized [0..1] value expected */
-    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Commands")
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "FDM FC Commands")
     double RightBrake = 0;
     /* Normalized [0..1] value expected */
-    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Commands")
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "FDM FC Commands")
     double CenterBrake = 0;
     /* Normalized [0..1] value expected */
-    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Commands")
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "FDM FC Commands")
     double ParkingBrake = 0;
     // 0 for up, 1 for down.
     /* Normalized [0..1] value expected */
-    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Commands")
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "FDM FC Commands")
     double GearDown = 1;
 
 	// Wings
 
     /* Normalized [0..1] value expected */
-    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Commands")
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "FDM FC Commands")
     double Flap = 0;
     /* Normalized [0..1] value expected */
-    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Commands")
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "FDM FC Commands")
     double SpeedBrake = 0;
     /* Normalized [0..1] value expected */
-    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Commands")
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "FDM FC Commands")
     double Spoiler = 0;
 
 	FString GetDebugMessage()
@@ -354,53 +354,53 @@ struct FAircraftState
 	}
 
 	// Articulated Parts State in degrees
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Articulations")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "FDM Articulations")
 	double ElevatorPosition = 0;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Articulations")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "FDM Articulations")
 	double LeftAileronPosition = 0;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Articulations")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "FDM Articulations")
 	double RightAileronPosition = 0;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Articulations")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "FDM Articulations")
 	double RudderPosition = 0;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Articulations")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "FDM Articulations")
 	double FlapPosition = 0;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Articulations")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "FDM Articulations")
 	double SpeedBrakePosition = 0;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Articulations")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "FDM Articulations")
 	double SpoilersPosition = 0;
 
 
 	// Speed
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Speed")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "FDM Speed")
 	double CalibratedAirSpeedKts = 0;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Speed")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "FDM Speed")
 	double GroundSpeedKts = 0;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Speed")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "FDM Speed")
 	double TotalVelocityKts = 0;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Speed")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "FDM Speed")
 	FVector VelocityNEDfps = FVector::ZeroVector;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Speed")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "FDM Speed")
 	double AltitudeASLFt = 0;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Speed")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "FDM Speed")
 	double AltitudeAGLFt = 0;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Speed")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "FDM Speed")
 	double AltitudeRateFtps = 0;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Speed")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "FDM Speed")
 	double StallWarning = 0;
 	
 	
 	// Transformation
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Transformation")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "FDM Transformation")
 	FVector ECEFLocation = FVector::ZeroVector;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Transformation")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "FDM Transformation")
 	double Latitude = 0;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Transformation")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "FDM Transformation")
 	double Longitude = 0; 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Transformation")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "FDM Transformation")
 	FRotator LocalEulerAngles = FRotator::ZeroRotator;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Transformation")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "FDM Transformation")
 	FVector EulerRates = FVector::ZeroVector;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Transformation")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "FDM Transformation")
 	FVector UEForwardHorizontal = FVector::ZeroVector;
 	
 	// Misc
