@@ -17,7 +17,9 @@ set(UNIT_TESTS FGColumnVector3Test
                FGParameterTest
                FGParameterValueTest
                FGConditionTest
-               FGPropertyManagerTest)
+               FGPropertyManagerTest
+               FGAtmosphereTest
+               FGAuxiliaryTest)
 
 foreach(test ${UNIT_TESTS})
   cxxtest_add_test(${test}1 ${test}.cpp ${CMAKE_CURRENT_SOURCE_DIR}/${test}.h)

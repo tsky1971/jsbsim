@@ -193,7 +193,7 @@ double UJSBSimMovementComponent::GetAGLevel(const FVector& StartECEFLocation, FV
   // Compute the raycast Origin point
   FVector StartEngineLocation;
   GeoReferencingSystem->ECEFToEngine(StartECEFLocation, StartEngineLocation);
-  FVector LineCheckStart = StartEngineLocation + 200 * Up; // slightly above the starting point
+  FVector LineCheckStart = StartEngineLocation + AGLThresholdMeters * 100 * Up; // slightly above the starting point
 
   // Compute the raycast end point
   // Estimate raycast length - Altitude + 5% of ellipsoid radius in case of negative altitudes
@@ -683,6 +683,7 @@ void UJSBSimMovementComponent::CopyFromJSBSim()
 	if (AircraftState.AltitudeAGLFt < -10.0 || AircraftState.AltitudeASLFt < -10.0) {
 		Exec->SuspendIntegration();
 		AircraftState.Crashed = true;
+	  AircraftCrashed.Broadcast();
 	}
 	
 	// Copy the fuel levels from JSBSim if fuel
@@ -1102,7 +1103,7 @@ void UJSBSimMovementComponent::DrawDebugMessage()
 	DebugMessage += LINE_TERMINATOR;
 	int32 NumGears = Gears.Num();
 	DebugMessage += FString::Printf(TEXT("Landing Gears (%d) : "), NumGears) + LINE_TERMINATOR;
-	for (int32 i = 0; i < NumTanks; i++)
+	for (int32 i = 0; i < NumGears; i++)
 	{
 		if (Gears[i].IsBogey)
 		{

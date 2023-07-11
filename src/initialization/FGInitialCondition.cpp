@@ -48,6 +48,7 @@ INCLUDES
 #include "models/FGInertial.h"
 #include "models/FGAtmosphere.h"
 #include "models/FGAccelerations.h"
+#include "models/FGAuxiliary.h"
 #include "input_output/FGXMLFileRead.h"
 #include "FGTrim.h"
 #include "FGFDMExec.h"
@@ -63,8 +64,8 @@ FGInitialCondition::FGInitialCondition(FGFDMExec *FDMExec) : fdmex(FDMExec)
   InitializeIC();
 
   if(FDMExec) {
-    Atmosphere=fdmex->GetAtmosphere();
     Aircraft=fdmex->GetAircraft();
+    Auxiliary=fdmex->GetAuxiliary();
   } else {
     cout << "FGInitialCondition: This class requires a pointer to a valid FGFDMExec object" << endl;
   }
@@ -152,10 +153,10 @@ void FGInitialCondition::InitializeIC(void)
 
 void FGInitialCondition::SetVequivalentKtsIC(double ve)
 {
+  const auto Atmosphere = fdmex->GetAtmosphere();
   double altitudeASL = GetAltitudeASLFtIC();
   double rho = Atmosphere->GetDensity(altitudeASL);
-  double rhoSL = Atmosphere->GetDensitySL();
-  SetVtrueFpsIC(ve*ktstofps*sqrt(rhoSL/rho));
+  SetVtrueFpsIC(ve*ktstofps*sqrt(FGAtmosphere::StdDaySLdensity/rho));
   lastSpeedSet = setve;
 }
 
@@ -163,6 +164,7 @@ void FGInitialCondition::SetVequivalentKtsIC(double ve)
 
 void FGInitialCondition::SetMachIC(double mach)
 {
+  const auto Atmosphere = fdmex->GetAtmosphere();
   double altitudeASL = GetAltitudeASLFtIC();
   double soundSpeed = Atmosphere->GetSoundSpeed(altitudeASL);
   SetVtrueFpsIC(mach*soundSpeed);
@@ -173,9 +175,10 @@ void FGInitialCondition::SetMachIC(double mach)
 
 void FGInitialCondition::SetVcalibratedKtsIC(double vcas)
 {
+  const auto Atmosphere = fdmex->GetAtmosphere();
   double altitudeASL = GetAltitudeASLFtIC();
   double pressure = Atmosphere->GetPressure(altitudeASL);
-  double mach = MachFromVcalibrated(fabs(vcas)*ktstofps, pressure);
+  double mach = Auxiliary->MachFromVcalibrated(fabs(vcas)*ktstofps, pressure);
   double soundSpeed = Atmosphere->GetSoundSpeed(altitudeASL);
 
   SetVtrueFpsIC(mach * soundSpeed);
@@ -581,7 +584,7 @@ void FGInitialCondition::SetWindDownKtsIC(double wD)
   const FGMatrix33& Tb2l = orientation.GetTInv();
   FGColumnVector3 _vt_NED = Tb2l * Tw2b * FGColumnVector3(vt, 0., 0.);
 
-  _vt_NED(eW) = vUVW_NED(eW) + wD;
+  _vt_NED(eW) = vUVW_NED(eW) + wD * ktstofps;
   vt = _vt_NED.Magnitude();
 
   calcAeroAngles(_vt_NED);
@@ -676,15 +679,15 @@ double FGInitialCondition::GetTerrainElevationFtIC(void) const
 
 void FGInitialCondition::SetAltitudeAGLFtIC(double agl)
 {
+  const auto Atmosphere = fdmex->GetAtmosphere();
   double altitudeASL = GetAltitudeASLFtIC();
   double pressure = Atmosphere->GetPressure(altitudeASL);
   double soundSpeed = Atmosphere->GetSoundSpeed(altitudeASL);
   double rho = Atmosphere->GetDensity(altitudeASL);
-  double rhoSL = Atmosphere->GetDensitySL();
 
   double mach0 = vt / soundSpeed;
-  double vc0 = VcalibratedFromMach(mach0, pressure);
-  double ve0 = vt * sqrt(rho/rhoSL);
+  double vc0 = Auxiliary->VcalibratedFromMach(mach0, pressure);
+  double ve0 = vt * sqrt(rho/FGAtmosphere::StdDaySLdensity);
 
   switch(lastLatitudeSet) {
   case setgeod:
@@ -725,14 +728,14 @@ void FGInitialCondition::SetAltitudeAGLFtIC(double agl)
 
   switch(lastSpeedSet) {
     case setvc:
-      mach0 = MachFromVcalibrated(vc0, pressure);
+      mach0 = Auxiliary->MachFromVcalibrated(vc0, pressure);
       SetVtrueFpsIC(mach0 * soundSpeed);
       break;
     case setmach:
       SetVtrueFpsIC(mach0 * soundSpeed);
       break;
     case setve:
-      SetVtrueFpsIC(ve0 * sqrt(rhoSL/rho));
+      SetVtrueFpsIC(ve0 * sqrt(FGAtmosphere::StdDaySLdensity/rho));
       break;
     default: // Make the compiler stop complaining about missing enums
       break;
@@ -748,15 +751,15 @@ void FGInitialCondition::SetAltitudeAGLFtIC(double agl)
 
 void FGInitialCondition::SetAltitudeASLFtIC(double alt)
 {
+  const auto Atmosphere = fdmex->GetAtmosphere();
   double altitudeASL = GetAltitudeASLFtIC();
   double pressure = Atmosphere->GetPressure(altitudeASL);
   double soundSpeed = Atmosphere->GetSoundSpeed(altitudeASL);
   double rho = Atmosphere->GetDensity(altitudeASL);
-  double rhoSL = Atmosphere->GetDensitySL();
 
   double mach0 = vt / soundSpeed;
-  double vc0 = VcalibratedFromMach(mach0, pressure);
-  double ve0 = vt * sqrt(rho/rhoSL);
+  double vc0 = Auxiliary->VcalibratedFromMach(mach0, pressure);
+  double ve0 = vt * sqrt(rho/FGAtmosphere::StdDaySLdensity);
 
   switch(lastLatitudeSet) {
   case setgeod:
@@ -829,14 +832,14 @@ void FGInitialCondition::SetAltitudeASLFtIC(double alt)
 
   switch(lastSpeedSet) {
     case setvc:
-      mach0 = MachFromVcalibrated(vc0, pressure);
+      mach0 = Auxiliary->MachFromVcalibrated(vc0, pressure);
       SetVtrueFpsIC(mach0 * soundSpeed);
       break;
     case setmach:
       SetVtrueFpsIC(mach0 * soundSpeed);
       break;
     case setve:
-      SetVtrueFpsIC(ve0 * sqrt(rhoSL/rho));
+      SetVtrueFpsIC(ve0 * sqrt(FGAtmosphere::StdDaySLdensity/rho));
       break;
     default: // Make the compiler stop complaining about missing enums
       break;
@@ -919,19 +922,16 @@ double FGInitialCondition::GetWindDirDegIC(void) const
   FGColumnVector3 _vt_NED = Tb2l * Tw2b * FGColumnVector3(vt, 0., 0.);
   FGColumnVector3 _vWIND_NED = _vt_NED - vUVW_NED;
 
-  return _vWIND_NED(eV) == 0.0 ? 0.0
-                               : atan2(_vWIND_NED(eV), _vWIND_NED(eU))*radtodeg;
+  return _vWIND_NED.Magnitude(eU, eV) == 0.0 ? 0.0
+                              : atan2(_vWIND_NED(eV), _vWIND_NED(eU))*radtodeg;
 }
 
 //******************************************************************************
 
-double FGInitialCondition::GetNEDWindFpsIC(int idx) const
-{
+FGColumnVector3 FGInitialCondition::GetWindNEDFpsIC(void) const {
   const FGMatrix33& Tb2l = orientation.GetTInv();
   FGColumnVector3 _vt_NED = Tb2l * Tw2b * FGColumnVector3(vt, 0., 0.);
-  FGColumnVector3 _vWIND_NED = _vt_NED - vUVW_NED;
-
-  return _vWIND_NED(idx);
+  return _vt_NED - vUVW_NED;
 }
 
 //******************************************************************************
@@ -961,28 +961,30 @@ double FGInitialCondition::GetBodyWindFpsIC(int idx) const
 
 double FGInitialCondition::GetVcalibratedKtsIC(void) const
 {
+  const auto Atmosphere = fdmex->GetAtmosphere();
   double altitudeASL = GetAltitudeASLFtIC();
   double pressure = Atmosphere->GetPressure(altitudeASL);
   double soundSpeed = Atmosphere->GetSoundSpeed(altitudeASL);
   double mach = vt / soundSpeed;
 
-  return fpstokts * VcalibratedFromMach(mach, pressure);
+  return fpstokts * Auxiliary->VcalibratedFromMach(mach, pressure);
 }
 
 //******************************************************************************
 
 double FGInitialCondition::GetVequivalentKtsIC(void) const
 {
+  const auto Atmosphere = fdmex->GetAtmosphere();
   double altitudeASL = GetAltitudeASLFtIC();
   double rho = Atmosphere->GetDensity(altitudeASL);
-  double rhoSL = Atmosphere->GetDensitySL();
-  return fpstokts * vt * sqrt(rho/rhoSL);
+  return fpstokts * vt * sqrt(rho/FGAtmosphere::StdDaySLdensity);
 }
 
 //******************************************************************************
 
 double FGInitialCondition::GetMachIC(void) const
 {
+  const auto Atmosphere = fdmex->GetAtmosphere();
   double altitudeASL = GetAltitudeASLFtIC();
   double soundSpeed = Atmosphere->GetSoundSpeed(altitudeASL);
   return vt / soundSpeed;
@@ -1027,21 +1029,23 @@ bool FGInitialCondition::Load(const SGPath& rstfile, bool useStoredPath)
     throw BaseException(s.str());
   }
 
-  double version = HUGE_VAL;
   bool result = false;
 
-  if (document->HasAttribute("version"))
-    version = document->GetAttributeValueAsNumber("version");
+  // If doc has an version, check it. Otherwise fall back to legacy.
+  if (document->HasAttribute("version")) {
+    double version = document->GetAttributeValueAsNumber("version");
 
-  if (version == HUGE_VAL) {
-    result = Load_v1(document); // Default to the old version
-  } else if (version >= 3.0) {
-    const string s("Only initialization file formats 1 and 2 are currently supported");
-    cerr << document->ReadFrom() << endl << s << endl;
-    throw BaseException(s);
-  } else if (version >= 2.0) {
-    result = Load_v2(document);
-  } else if (version >= 1.0) {
+    if (version >= 3.0) {
+      const string s("Only initialization file formats 1 and 2 are currently supported");
+      cerr << document->ReadFrom() << endl << s << endl;
+      throw BaseException(s);
+    } else if (version >= 2.0) {
+      result = Load_v2(document);
+    } else if (version >= 1.0) {
+      result = Load_v1(document);
+    }
+
+  } else {
     result = Load_v1(document);
   }
 

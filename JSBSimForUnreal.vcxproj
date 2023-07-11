@@ -56,10 +56,10 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)src\simgear\xml;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>JSBSIM_EXPORT;JSBSIM_VERSION="1.2.0.dev1";WIN32;NOMINMAX;XML_STATIC;_DEBUG;_CONSOLE;HAVE_EXPAT_CONFIG_H;_USE_MATH_DEFINES;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>JSBSIM_EXPORT;JSBSIM_VERSION="1.2.0.dev1";WIN32;NOMINMAX;XML_STATIC;NDEBUG;_CONSOLE;HAVE_EXPAT_CONFIG_H;_USE_MATH_DEFINES;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <FloatingPointModel>Precise</FloatingPointModel>
       <FloatingPointExceptions>true</FloatingPointExceptions>
@@ -70,7 +70,8 @@
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <DisableSpecificWarnings>4996;4267;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <CompileAsManaged>false</CompileAsManaged>
+      <CompileAsManaged>
+      </CompileAsManaged>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -308,9 +309,7 @@ exit/B %errlev%</Command>
     <ClCompile Include="src\models\flight_control\FGAccelerometer.cpp" />
     <ClCompile Include="src\models\flight_control\FGActuator.cpp" />
     <ClCompile Include="src\models\FGAerodynamics.cpp" />
-    <ClCompile Include="src\models\FGAircraft.cpp">
-      <FavorSizeOrSpeed Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Speed</FavorSizeOrSpeed>
-    </ClCompile>
+    <ClCompile Include="src\models\FGAircraft.cpp" />
     <ClCompile Include="src\models\FGAtmosphere.cpp" />
     <ClCompile Include="src\models\FGAuxiliary.cpp" />
     <ClCompile Include="src\models\FGBuoyantForces.cpp" />
@@ -368,9 +367,7 @@ exit/B %errlev%</Command>
     <ClCompile Include="src\models\flight_control\FGSummer.cpp" />
     <ClCompile Include="src\models\flight_control\FGSwitch.cpp" />
     <ClCompile Include="src\math\FGTable.cpp" />
-    <ClCompile Include="src\models\propulsion\FGTank.cpp">
-      <FloatingPointModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Fast</FloatingPointModel>
-    </ClCompile>
+    <ClCompile Include="src\models\propulsion\FGTank.cpp" />
     <ClCompile Include="src\models\propulsion\FGThruster.cpp" />
     <ClCompile Include="src\initialization\FGTrim.cpp" />
     <ClCompile Include="src\initialization\FGTrimAxis.cpp" />

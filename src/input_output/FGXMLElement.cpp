@@ -28,6 +28,7 @@
 INCLUDES
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
+#include <iostream>
 #include <sstream>  // for assembling the error messages / what of exceptions.
 #include <stdexcept>  // using domain_error, invalid_argument, and length_error.
 #include "FGXMLElement.h"
@@ -123,7 +124,7 @@ Element::Element(const string& nm)
     convert["N"]["LBS"] = 0.22482;
     convert["LBS"]["N"] = 1.0/convert["N"]["LBS"];
     // Velocity
-    convert["KTS"]["FT/SEC"] = 1.68781;
+    convert["KTS"]["FT/SEC"] = 1.6878098571;
     convert["FT/SEC"]["KTS"] = 1.0/convert["KTS"]["FT/SEC"];
     convert["M/S"]["FT/S"] = 3.2808399;
     convert["M/S"]["KTS"] = convert["M/S"]["FT/S"]/convert["KTS"]["FT/SEC"];
