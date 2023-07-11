@@ -8,6 +8,8 @@ public class JSBSimFlightDynamicsModelEditor : ModuleRules
 	public JSBSimFlightDynamicsModelEditor(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
+		//PublicDefinitions.Add("USE_UNREAL_ED=0");
+
 		
 		PublicIncludePaths.AddRange(
 			new string[] {
@@ -29,6 +31,7 @@ public class JSBSimFlightDynamicsModelEditor : ModuleRules
 				"Core",
 				"CoreUObject",
 				"Engine",
+				"UnrealEd",
 				"InputCore",
 				"JSBSim",
 				"JSBSimFlightDynamicsModel",

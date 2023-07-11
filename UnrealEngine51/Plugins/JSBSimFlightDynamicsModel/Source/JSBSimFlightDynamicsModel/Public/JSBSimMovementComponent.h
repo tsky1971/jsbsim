@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Runtime/Engine/Classes/Engine/World.h"
 #include "Components/ActorComponent.h"
 #include <sstream>
 #include "JSBSimModule.h"

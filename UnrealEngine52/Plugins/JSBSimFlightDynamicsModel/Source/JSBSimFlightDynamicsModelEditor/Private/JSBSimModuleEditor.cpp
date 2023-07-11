@@ -2,9 +2,15 @@
 
 
 #include "JSBSimModuleEditor.h"
-#include "UnrealEd.h"
+//#include "UnrealEd.h"
+#include "Editor/UnrealEd/Classes/Editor/UnrealEdEngine.h"
+#include "Editor/UnrealEd/Public/Editor.h"
+// Weitere benötigte Header
+#include <UnrealEdGlobals.h>
+
 #include "JSBSimMovementCompVisualizer.h"
 #include "JSBSimMovementComponent.h"
+
 
 #define LOCTEXT_NAMESPACE "FJSBSimModuleEditor"
 

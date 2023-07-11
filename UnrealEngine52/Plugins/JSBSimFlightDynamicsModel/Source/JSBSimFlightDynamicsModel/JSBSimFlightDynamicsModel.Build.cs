@@ -8,7 +8,8 @@ public class JSBSimFlightDynamicsModel : ModuleRules
 	public JSBSimFlightDynamicsModel(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
-		
+		//PublicDefinitions.Add("USE_UNREAL_ED=0");
+
 		PublicIncludePaths.AddRange(
 			new string[] {
 				// ... add public include paths required here ...
@@ -26,7 +27,7 @@ public class JSBSimFlightDynamicsModel : ModuleRules
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"Core", "CoreUObject", "Engine", 
+				"Core", "CoreUObject", "Engine",
 				"JSBSim",
 				"GeoReferencing",
 				"Projects"

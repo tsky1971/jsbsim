@@ -4,6 +4,11 @@
 #include "JSBSimMovementCompVisualizer.h"
 #include "JSBSimMovementComponent.h"
 
+#include "Editor/UnrealEd/Classes/Editor/UnrealEdEngine.h"
+#include "Editor/UnrealEd/Public/Editor.h"
+#include "Runtime/Engine/Public/CanvasTypes.h"
+
+
 
 #pragma warning( push )
 #pragma warning( disable : 4263 )

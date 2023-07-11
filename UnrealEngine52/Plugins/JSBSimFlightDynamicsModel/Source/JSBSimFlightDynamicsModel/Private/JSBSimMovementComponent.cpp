@@ -43,6 +43,12 @@
 #include "GeoReferencingSystem.h"
 #include "Components/ActorComponent.h"
 
+#include "Engine/Engine.h"
+#include "Runtime/Engine/Public/CollisionQueryParams.h"
+#include "Runtime/Core/Public/Misc/Paths.h"
+#include "HAL/FileManagerGeneric.h"
+
+
 
 // Utility class and static member to redirect cout to UE_LOG - see in UJSBSimMovementComponent::UJSBSimMovementComponent()
 class LStream : public std::stringbuf {

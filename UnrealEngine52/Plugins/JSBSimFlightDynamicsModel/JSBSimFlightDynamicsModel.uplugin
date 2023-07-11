@@ -5,25 +5,31 @@
 	"FriendlyName": "JSBSimFlightDynamicsModel",
 	"Description": "A wrapper around the OpenSouce JSBSim FDM",
 	"Category": "Other",
-	"CreatedBy": "Epic Games",
+	"CreatedBy": "jsbsim.sourceforge.net",
 	"CreatedByURL": "http://jsbsim.sourceforge.net/",
 	"DocsURL": "",
 	"MarketplaceURL": "",
 	"SupportURL": "",
 	"CanContainContent": true,
-	"IsBetaVersion": false,
+	"IsBetaVersion": true,
 	"IsExperimentalVersion": false,
 	"Installed": false,
 	"Modules": [
 		{
 			"Name": "JSBSimFlightDynamicsModel",
 			"Type": "Runtime",
-			"LoadingPhase": "Default"
+			"LoadingPhase": "Default",
+			"PlatformAllowList": [
+				"Win64"
+			]
 		},
 		{
 			"Name": "JSBSimFlightDynamicsModelEditor",
 			"Type": "Editor",
-			"LoadingPhase": "PostEngineInit"
+			"LoadingPhase": "PostEngineInit",
+			"PlatformAllowList": [
+				"Win64"
+			]
 		}
 	],
 	"Plugins": [
