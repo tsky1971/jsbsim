@@ -35,6 +35,7 @@ namespace JSBSim {
 // UE Forward Declarations
 class AGeoReferencingSystem;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDelegateAircraftCrashed);
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class JSBSIMFLIGHTDYNAMICSMODEL_API UJSBSimMovementComponent : public UActorComponent
@@ -70,6 +71,14 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Model")
 	bool DrawDebug = true;
 
+
+    /**
+	 * When querying for the Above Ground Level, JSBSim can throw raycasts from several points, sometimes under the StructuralFrameOrigin. 
+    *  By doing that, some of them can fail if they start below the ground. This value is a vertical offset added to each AGL Query to make sure we hit the ground. 
+    *  (Aircraft geometry is of course ignored during the process - 15m should be sufficient for all kind of aircrafts - Issue #786)
+	*/
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Model|Settings")
+	float AGLThresholdMeters = 15;
 
 	/**
 	 * Center of Gravity Location in Actor local frame
@@ -164,7 +173,7 @@ public:
 	// Tanks Properties 
 
 	UPROPERTY(BlueprintReadOnly, Editfixedsize, EditAnywhere, Category = "Model|Tanks")
-	TArray<struct FTank> Tanks;
+	TArray<struct FJSBSimTank> Tanks;
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Model|Tanks")
 	bool FuelFreeze = false;
@@ -172,22 +181,26 @@ public:
 	// Gear Properties 
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Editfixedsize, Category = "Model|Gears", meta=(TitleProperty = "{Name} Bogey = {IsBogey}"))
-	TArray<struct FGear> Gears;
+	TArray<struct FJSBSimGear> Gears;
 
 	// Engine Properties 
 	
 	UPROPERTY(Transient, BlueprintReadOnly, Editfixedsize, EditAnywhere, Category = "Model|Engines")
-	TArray<struct FEngineCommand> EngineCommands;
+	TArray<struct FJSBSimEngineCommand> EngineCommands;
 	UPROPERTY(Transient, BlueprintReadOnly, Editfixedsize, EditAnywhere, Category = "Model|Engines")
-	TArray<struct FEngineState> EngineStates;
+	TArray<struct FJSBSimEngineState> EngineStates;
 
 	// Flight Control Commands and State
 	
 	UPROPERTY(Transient, BlueprintReadWrite, EditAnywhere, Category = "Commands")
-	FFlightControlCommands Commands;
+	FJSBSimFlightControlCommands Commands;
 
 	UPROPERTY(Transient, BlueprintReadOnly, VisibleAnywhere, Category = "State")
-	FAircraftState AircraftState;
+	FJSBSimAircraftState AircraftState;
+
+  // Events
+  UPROPERTY(VisibleAnywhere, BlueprintAssignable, Category = "State")
+  FDelegateAircraftCrashed AircraftCrashed;
 
 
     // Functions
@@ -212,7 +225,7 @@ public:
   *   -Returns names of all properties that JSBSim created/loaded
   *   -Currently not very useful other than to see what exists
   *   -Returns a big list, probably should not call often  */
-	UFUNCTION(BlueprintCallable, DisplayName = "Property Manager Get Catalog", Category = "FDM")
+	UFUNCTION(BlueprintCallable, DisplayName = "Property Manager Get Catalog", Category = "Property")
     void PropertyManagerNode(TArray<FString> & Catalog);
 
 	/**Command Input & Output from Property Manger
@@ -220,7 +233,7 @@ public:
   *   -OutValue of blank/empty means property name does not exist.
   *   -InValue of blank/empty if you wish to only lookup a property value,
   *     otherwise you will override the system value!*/
-	UFUNCTION(BlueprintCallable, DisplayName = "Command Console", Category = "FDM")
+	UFUNCTION(BlueprintCallable, DisplayName = "Command Console", Category = "Command")
     void CommandConsole(FString Property, FString InValue, FString & OutValue);
 
 	/**Command Inputs & Outputs in Batch to Property Manger
@@ -228,7 +241,7 @@ public:
   *   -OutValue of blank/empty means property name does not exist.
   *   -InValue of blank/empty if you wish to only lookup a property value,
   *     otherwise you will override the system value! */
-	UFUNCTION(BlueprintCallable, DisplayName = "Command Console Batch", Category = "FDM")
+	UFUNCTION(BlueprintCallable, DisplayName = "Command Console Batch", Category = "Command")
     void CommandConsoleBatch(TArray<FString> Property, TArray<FString> InValue, TArray<FString>& OutValue);
 
 
