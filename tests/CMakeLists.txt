@@ -50,9 +50,10 @@ set(PYTHON_TESTS ResetOutputFiles
                  TestLinearActuator
                  TestPlanet
                  TestLighterThanAir
-                 TestUnusableFuel)
+                 TestUnusableFuel
+                 TestPQRdot)
 
 foreach(test ${PYTHON_TESTS})
   add_test(NAME ${test}
-    COMMAND ${Python3_EXECUTABLE} -B ${CMAKE_CURRENT_SOURCE_DIR}/${test}.py)
+    COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/${test}.py)
 endforeach()

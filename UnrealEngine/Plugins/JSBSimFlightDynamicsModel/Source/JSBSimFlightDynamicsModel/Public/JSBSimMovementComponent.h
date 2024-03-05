@@ -173,7 +173,7 @@ public:
 	// Tanks Properties 
 
 	UPROPERTY(BlueprintReadOnly, Editfixedsize, EditAnywhere, Category = "Model|Tanks")
-	TArray<struct FTank> Tanks;
+	TArray<struct FJSBSimTank> Tanks;
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Model|Tanks")
 	bool FuelFreeze = false;
@@ -181,25 +181,25 @@ public:
 	// Gear Properties 
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Editfixedsize, Category = "Model|Gears", meta=(TitleProperty = "{Name} Bogey = {IsBogey}"))
-	TArray<struct FGear> Gears;
+	TArray<struct FJSBSimGear> Gears;
 
 	// Engine Properties 
 	
 	UPROPERTY(Transient, BlueprintReadOnly, Editfixedsize, EditAnywhere, Category = "Model|Engines")
-	TArray<struct FEngineCommand> EngineCommands;
+	TArray<struct FJSBSimEngineCommand> EngineCommands;
 	UPROPERTY(Transient, BlueprintReadOnly, Editfixedsize, EditAnywhere, Category = "Model|Engines")
-	TArray<struct FEngineState> EngineStates;
+	TArray<struct FJSBSimEngineState> EngineStates;
 
 	// Flight Control Commands and State
 	
 	UPROPERTY(Transient, BlueprintReadWrite, EditAnywhere, Category = "Commands")
-	FFlightControlCommands Commands;
+	FJSBSimFlightControlCommands Commands;
 
 	UPROPERTY(Transient, BlueprintReadOnly, VisibleAnywhere, Category = "State")
-	FAircraftState AircraftState;
+	FJSBSimAircraftState AircraftState;
 
   // Events
-  UPROPERTY(VisibleAnywhere, BlueprintAssignable)
+  UPROPERTY(VisibleAnywhere, BlueprintAssignable, Category = "State")
   FDelegateAircraftCrashed AircraftCrashed;
 
 
@@ -225,7 +225,7 @@ public:
   *   -Returns names of all properties that JSBSim created/loaded
   *   -Currently not very useful other than to see what exists
   *   -Returns a big list, probably should not call often  */
-	UFUNCTION(BlueprintCallable, DisplayName = "Property Manager Get Catalog", Category = "FDM")
+	UFUNCTION(BlueprintCallable, DisplayName = "Property Manager Get Catalog", Category = "Property")
     void PropertyManagerNode(TArray<FString> & Catalog);
 
 	/**Command Input & Output from Property Manger
@@ -233,7 +233,7 @@ public:
   *   -OutValue of blank/empty means property name does not exist.
   *   -InValue of blank/empty if you wish to only lookup a property value,
   *     otherwise you will override the system value!*/
-	UFUNCTION(BlueprintCallable, DisplayName = "Command Console", Category = "FDM")
+	UFUNCTION(BlueprintCallable, DisplayName = "Command Console", Category = "Command")
     void CommandConsole(FString Property, FString InValue, FString & OutValue);
 
 	/**Command Inputs & Outputs in Batch to Property Manger
@@ -241,7 +241,7 @@ public:
   *   -OutValue of blank/empty means property name does not exist.
   *   -InValue of blank/empty if you wish to only lookup a property value,
   *     otherwise you will override the system value! */
-	UFUNCTION(BlueprintCallable, DisplayName = "Command Console Batch", Category = "FDM")
+	UFUNCTION(BlueprintCallable, DisplayName = "Command Console Batch", Category = "Command")
     void CommandConsoleBatch(TArray<FString> Property, TArray<FString> InValue, TArray<FString>& OutValue);
 
 

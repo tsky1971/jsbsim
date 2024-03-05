@@ -65,6 +65,10 @@ add_library(libJSBSim ${HEADERS} ${SOURCES}
   $<TARGET_OBJECTS:Simgear>
   $<TARGET_OBJECTS:GeographicLib>
   )
+target_include_directories(
+  libJSBSim
+  PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+)
 add_coverage(libJSBSim)
 
 if(EXPAT_FOUND)
@@ -141,8 +145,7 @@ endif()
 
 if(BUILD_SHARED_LIBS)
   set_target_properties(libJSBSim PROPERTIES
-                                  SOVERSION ${LIBRARY_SOVERSION}
-                                  FRAMEWORK ON)
+                            SOVERSION ${LIBRARY_SOVERSION})
   install(TARGETS libJSBSim LIBRARY DESTINATION lib
                             NAMELINK_SKIP
                             COMPONENT runtime
