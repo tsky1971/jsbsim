@@ -88,6 +88,7 @@ A function definition consists of an operation, a value, a table, or a property
 - floor (takes 1 arg)
 - ceil (takes 1 arg)
 - fmod (takes 2 args)
+- roundmultiple (takes 2 args)
 - lt (less than, takes 2 args)
 - le (less equal, takes 2 args)
 - gt (greater than, takes 2 args)
@@ -121,7 +122,7 @@ An operation is defined in the configuration file as in the following example:
 A full function definition, such as is used in the aerodynamics section of a
 configuration file includes the function element, and other elements. It should
 be noted that there can be only one non-optional (non-documentation) element -
-that is, one operation element - in the top-level function definition.
+that is, one operation element or one table element - in the top-level function definition.
 Multiple value and/or property elements cannot be immediate child
 members of the function element. Almost always, the first operation within the
 function element will be a product or sum. For example:
@@ -511,6 +512,15 @@ refers to one or more instances of a property, value, or table.
     </fmod>
     @endcode
     Example: fmod(18.5, 4.2) evaluates to 1.7
+- @b roundmultiple returns the floating-point rounding of X to a multiple of M.
+                   round(X/M) * M
+    @code
+    <roundmultiple>
+      {property, value, table, or other function element}
+      {property, value, table, or other function element}
+    </roundmultiple>
+    @endcode
+    Example: roundmultiple(93.43, 5.0) evaluates to 95.0
 - @b lt returns a 1 if the value of the first immediate child element is less
         than the value of the second immediate child element, returns 0
         otherwise

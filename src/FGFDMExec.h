@@ -630,10 +630,14 @@ public:
   auto GetRandomGenerator(void) const { return RandomGenerator; }
 
 private:
+  // Declare Log first so that it's destroyed last: the logger may be used by
+  // some FGFDMExec members to log data during their destruction.
+  std::shared_ptr<FGLogger> Log;
+
   unsigned int Frame;
   unsigned int IdFDM;
   int disperse;
-  unsigned short Terminate;
+  bool Terminate;
   double dT;
   double saved_dT;
   double sim_time;
@@ -696,8 +700,6 @@ private:
   std::vector <std::shared_ptr<childData>> ChildFDMList;
   std::vector <std::shared_ptr<FGModel>> Models;
   std::map<std::string, FGTemplateFunc_ptr> TemplateFunctions;
-
-  std::shared_ptr<FGLogger> Log;
 
   bool ReadFileHeader(Element*);
   bool ReadChild(Element*);

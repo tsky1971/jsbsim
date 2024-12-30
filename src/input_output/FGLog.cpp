@@ -1,9 +1,9 @@
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
- Module:       FGOutputType.cpp
+ Module:       FGLog.cpp
  Author:       Bertrand Coconnier
  Date started: 05/03/24
- Purpose:      Manage output of sim parameters to file or stdout
+ Purpose:      Manage the logging of messages
 
   ------------- Copyright (C) 2024 Bertrand Coconnier -------------
 
@@ -26,8 +26,8 @@
 
 FUNCTIONAL DESCRIPTION
 --------------------------------------------------------------------------------
-This is the place where you create output routines to dump data for perusal
-later.
+This is the place where the logging of messages is managed. The messages can be
+sent to the console, to a file, etc.
 
 HISTORY
 --------------------------------------------------------------------------------
@@ -36,6 +36,8 @@ HISTORY
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 INCLUDES
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
+
+#include <iostream>
 
 #include "FGLog.h"
 #include "input_output/FGXMLElement.h"
@@ -48,18 +50,26 @@ CLASS IMPLEMENTATION
 
 void FGLogging::Flush(void)
 {
-  logger->Message(buffer.str());
-  buffer.str("");
-  logger->Format(LogFormat::RESET);
+  std::string message = buffer.str();
+
+  if (!message.empty()) {
+    logger->Message(message);
+    buffer.str("");
+  }
+
   logger->Flush();
-  buffer.clear();
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 FGLogging& FGLogging::operator<<(LogFormat format) {
-  logger->Message(buffer.str());
-  buffer.str("");
+  std::string message = buffer.str();
+
+  if (!message.empty()) {
+    logger->Message(message);
+    buffer.str("");
+  }
+
   logger->Format(format);
   return *this;
 }
@@ -74,19 +84,22 @@ FGXMLLogging::FGXMLLogging(std::shared_ptr<FGLogger> logger, Element* el, LogLev
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-void FGLogConsole::SetLevel(LogLevel level) {
-  FGLogger::SetLevel(level);
-  switch (level)
+void FGLogConsole::Flush(void) {
+  switch (log_level)
   {
   case LogLevel::BULK:
   case LogLevel::DEBUG:
   case LogLevel::INFO:
-    out.tie(&std::cout);
+    std::cout << buffer.str();
+    std::cout.flush(); // Force the message to be immediately displayed in the console
     break;
   default:
-    out.tie(&std::cerr);
+    std::cerr << buffer.str();
+    std::cerr.flush(); // Force the message to be immediately displayed in the console
     break;
   }
+
+  buffer.str("");
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -95,29 +108,29 @@ void FGLogConsole::Format(LogFormat format) {
   switch (format)
   {
   case LogFormat::RED:
-    out << FGJSBBase::fgred;
+    buffer << FGJSBBase::fgred;
     break;
   case LogFormat::BLUE:
-    out << FGJSBBase::fgblue;
+    buffer << FGJSBBase::fgblue;
     break;
   case LogFormat::BOLD:
-    out << FGJSBBase::highint;
+    buffer << FGJSBBase::highint;
     break;
   case LogFormat::NORMAL:
-    out << FGJSBBase::normint;
+    buffer << FGJSBBase::normint;
     break;
   case LogFormat::UNDERLINE_ON:
-    out << FGJSBBase::underon;
+    buffer << FGJSBBase::underon;
     break;
   case LogFormat::UNDERLINE_OFF:
-    out << FGJSBBase::underoff;
+    buffer << FGJSBBase::underoff;
     break;
   case LogFormat::DEFAULT:
-    out << FGJSBBase::fgdef;
+    buffer << FGJSBBase::fgdef;
     break;
   case LogFormat::RESET:
   default:
-    out << FGJSBBase::reset;
+    buffer << FGJSBBase::reset;
     break;
   }
 }

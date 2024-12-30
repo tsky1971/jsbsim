@@ -68,6 +68,11 @@ INCLUDES
 #  include <sys/time.h>
 #endif
 
+// The flag ENABLE_VIRTUAL_TERMINAL_PROCESSING is not defined for MinGW < 7.0.0
+#if defined(__MINGW64_VERSION_MAJOR) && __MINGW64_VERSION_MAJOR < 7
+#define ENABLE_VIRTUAL_TERMINAL_PROCESSING 0x4
+#endif
+
 #include <iostream>
 #include <cstdlib>
 
@@ -287,7 +292,7 @@ int main(int argc, char* argv[])
   _controlfp(_controlfp(0, 0) & ~(_EM_INVALID | _EM_ZERODIVIDE | _EM_OVERFLOW),
            _MCW_EM);
 #elif defined(__GNUC__) && !defined(sgi) && !defined(__APPLE__)
-  feenableexcept(FE_DIVBYZERO | FE_INVALID);
+  feenableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW);
 #endif
 
   try {
@@ -359,6 +364,17 @@ int real_main(int argc, char* argv[])
   FDMExec->SetOutputPath(SGPath("."));
   FDMExec->GetPropertyManager()->Tie("simulation/frame_start_time", &actual_elapsed_time);
   FDMExec->GetPropertyManager()->Tie("simulation/cycle_duration", &cycle_duration);
+
+  // Check whether to disable console highlighting output on Windows.
+  // Support was added to Windows for Virtual Terminal codes by a particular
+  // Windows 10 release.
+#ifdef _WIN32
+  HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
+  DWORD dwMode = 0;
+  GetConsoleMode(hStdOut, &dwMode);
+  if ((dwMode & ENABLE_VIRTUAL_TERMINAL_PROCESSING) == 0)
+    nohighlight = true;
+#endif
 
   if (nohighlight) FDMExec->disableHighLighting();
 
