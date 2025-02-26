@@ -43,6 +43,7 @@ INCLUDES
 #include "initialization/FGInitialCondition.h"
 #include "FGFDMExec.h"
 #include "input_output/FGXMLFileRead.h"
+#include "input_output/string_utilities.h"
 
 #if !defined(__GNUC__) && !defined(sgi) && !defined(_MSC_VER)
 #  include <time>
@@ -181,6 +182,44 @@ public:
     ResetParser();
     return result;
   }
+};
+
+/** The Timer class measures the elapsed real time and can be paused and resumed.
+    It inherits from SGPropertyChangeListener to restart the timer whenever a
+    property change is detected. */
+class Timer : public SGPropertyChangeListener {
+public:
+  Timer() : SGPropertyChangeListener(), isPaused(false) { start(); }
+  void start(void) { initial_seconds = getcurrentseconds(); }
+
+  /// Restart the timer when the listened property is modified.
+  void valueChanged(SGPropertyNode* prop) override {
+    start();
+    if (isPaused) pause_start_seconds = initial_seconds;
+  }
+  /// Get the elapsed real time in seconds since the timer was started.
+  double getElapsedTime(void) { return getcurrentseconds() - initial_seconds; }
+
+  /** Pause the timer if the `paused` parameter is true and resume it if the
+      `paused` parameter is false. */
+  void pause(bool paused) {
+    if (paused) {
+      if (!isPaused) {
+        isPaused = true;
+        pause_start_seconds = getcurrentseconds();
+      }
+    } else {
+      if (isPaused) {
+        isPaused = false;
+        double pause_duration = getcurrentseconds() - pause_start_seconds;
+        initial_seconds += pause_duration; // Shift the initial time to account for the pause duration.
+      }
+    }
+  }
+private:
+  double initial_seconds = 0.0;
+  bool isPaused = false;
+  double pause_start_seconds = 0.0;
 };
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -328,16 +367,10 @@ int real_main(int argc, char* argv[])
   LogOutputName.clear();
   LogDirectiveName.clear();
   bool result = false, success;
-  bool was_paused = false;
-
   double frame_duration;
 
   double new_five_second_value = 0.0;
   double actual_elapsed_time = 0;
-  double initial_seconds = 0;
-  double current_seconds = 0.0;
-  double paused_seconds = 0.0;
-  double sim_lag_time = 0;
   double cycle_duration = 0.0;
   double override_sim_rate_value = 0.0;
   long sleep_nseconds = 0;
@@ -364,6 +397,10 @@ int real_main(int argc, char* argv[])
   FDMExec->SetOutputPath(SGPath("."));
   FDMExec->GetPropertyManager()->Tie("simulation/frame_start_time", &actual_elapsed_time);
   FDMExec->GetPropertyManager()->Tie("simulation/cycle_duration", &cycle_duration);
+
+  Timer timer;
+  SGPropertyNode_ptr reset_node = FDMExec->GetPropertyManager()->GetNode("simulation/reset");
+  reset_node->addChangeListener(&timer);
 
   // Check whether to disable console highlighting output on Windows.
   // Support was added to Windows for Virtual Terminal codes by a particular
@@ -540,7 +577,7 @@ int real_main(int argc, char* argv[])
   else          sleep_nseconds = (sleep_period )*1e9;           // 0.01 seconds
 
   tzset();
-  current_seconds = initial_seconds = getcurrentseconds();
+  timer.start();
 
   // *** CYCLIC EXECUTION LOOP, AND MESSAGE READING *** //
   while (result && FDMExec->GetSimTime() <= end_time) {
@@ -560,20 +597,16 @@ int real_main(int argc, char* argv[])
         if (play_nice) sim_nsleep(sleep_nseconds);
 
       } else {                    // ------------ RUNNING IN REALTIME MODE
+        timer.pause(false);
+        actual_elapsed_time = timer.getElapsedTime();
 
-        // "was_paused" will be true if entering this "run" loop from a paused state.
-        if (was_paused) {
-          initial_seconds += paused_seconds;
-          was_paused = false;
-        }
-        current_seconds = getcurrentseconds();                      // Seconds since 1 Jan 1970
-        actual_elapsed_time = current_seconds - initial_seconds;    // Real world elapsed seconds since start
-        sim_lag_time = actual_elapsed_time - FDMExec->GetSimTime(); // How far behind sim-time is from actual
-                                                                    // elapsed time.
+        double sim_lag_time = actual_elapsed_time - FDMExec->GetSimTime(); // How far behind sim-time is from actual elapsed time.
+        double cycle_start = getcurrentseconds();
+
         for (int i=0; i<(int)(sim_lag_time/frame_duration); i++) {  // catch up sim time to actual elapsed time.
           result = FDMExec->Run();
-          cycle_duration = getcurrentseconds() - current_seconds;   // Calculate cycle duration
-          current_seconds = getcurrentseconds();                    // Get new current_seconds
+          cycle_duration = getcurrentseconds() - cycle_start;   // Calculate cycle duration
+          cycle_start = getcurrentseconds();                    // Get new current_seconds
           if (FDMExec->Holding()) break;
         }
 
@@ -585,8 +618,7 @@ int real_main(int argc, char* argv[])
         }
       }
     } else { // Suspended
-      was_paused = true;
-      paused_seconds = getcurrentseconds() - current_seconds;
+      timer.pause(true);
       sim_nsleep(sleep_nseconds);
       result = FDMExec->Run();
     }
@@ -650,7 +682,7 @@ bool options(int count, char **arg)
       play_nice = true;
       if (n != string::npos) {
         try {
-          sleep_period = atof( value.c_str() );
+          sleep_period = JSBSim::atof_locale_c( value.c_str() );
         } catch (...) {
           cerr << endl << "  Invalid sleep period given!" << endl << endl;
           result = false;
@@ -710,11 +742,17 @@ bool options(int count, char **arg)
       }
     } else if (keyword == "--property") {
       if (n != string::npos) {
-         string propName = value.substr(0,value.find("="));
-         string propValueString = value.substr(value.find("=")+1);
-         double propValue = atof(propValueString.c_str());
-         CommandLineProperties.push_back(propName);
-         CommandLinePropertyValues.push_back(propValue);
+        string propName = value.substr(0,value.find("="));
+        string propValueString = value.substr(value.find("=")+1);
+        double propValue;
+        try {
+          propValue = JSBSim::atof_locale_c(propValueString.c_str());
+        } catch (JSBSim::InvalidNumber&) {
+          gripe;
+          exit(1);
+        }
+        CommandLineProperties.push_back(propName);
+        CommandLinePropertyValues.push_back(propValue);
       } else {
         gripe;
         exit(1);
@@ -723,7 +761,7 @@ bool options(int count, char **arg)
     } else if (keyword.substr(0,5) == "--end") {
       if (n != string::npos) {
         try {
-        end_time = atof( value.c_str() );
+          end_time = JSBSim::atof_locale_c( value.c_str() );
         } catch (...) {
           cerr << endl << "  Invalid end time given!" << endl << endl;
           result = false;
@@ -736,7 +774,7 @@ bool options(int count, char **arg)
     } else if (keyword == "--simulation-rate") {
       if (n != string::npos) {
         try {
-          simulation_rate = atof( value.c_str() );
+          simulation_rate = JSBSim::atof_locale_c( value.c_str() );
           override_sim_rate = true;
         } catch (...) {
           cerr << endl << "  Invalid simulation rate given!" << endl << endl;

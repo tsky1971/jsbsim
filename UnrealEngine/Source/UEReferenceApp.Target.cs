@@ -8,8 +8,12 @@ public class UEReferenceAppTarget : TargetRules
 	public UEReferenceAppTarget( TargetInfo Target) : base(Target)
 	{
 		Type = TargetType.Game;
-		DefaultBuildSettings = BuildSettingsVersion.V2;
-        IncludeOrderVersion = EngineIncludeOrderVersion.Unreal5_1;
-        ExtraModuleNames.AddRange( new string[] { "UEReferenceApp" } );
+		DefaultBuildSettings = BuildSettingsVersion.Latest;
+
+		#if UE_5_1_OR_LATER		
+		IncludeOrderVersion = EngineIncludeOrderVersion.Latest;
+		#endif
+
+		ExtraModuleNames.AddRange( new string[] { "UEReferenceApp" } );
 	}
 }

@@ -48,6 +48,7 @@
 #include "initialization/FGTrim.h"
 #include "Interfaces/IPluginManager.h"
 #include "simgear/props/props.hxx"
+#include <regex>
 
 #ifdef _MSC_VER
 #pragma warning( pop )
@@ -112,6 +113,17 @@ void UJSBSimMovementComponent::PropertyManagerNode(TArray<FString>& Catalog)
 //TODO, check if this is optimized, as we are using strings for convenience and we could probably cache the propertynode once we have it
 void UJSBSimMovementComponent::CommandConsole(FString Property, FString InValue, FString& OutValue)
 {
+
+  //Property name must be alphanumeric and limited to six []-._/ special characters. This check prevents UE5 editor crash when using invalid characters.
+#if WITH_EDITOR 
+  if (!std::regex_match((TCHAR_TO_UTF8(*Property)), std::regex("^[a-zA-Z0-9\\[\\]\\-._/]+$")))
+  {
+    FMessageLog("PIE").Error()->AddToken(FTextToken::Create(FText::FromString(FString::Printf(TEXT("%s: JSBSim Command Console Blueprint Node Error: *%s* Property name must be alphanumeric and limited to these []-._/ six characters. Do not use parentheses *(RW)* in your property name"), *this->GetOwner()->GetName(), *Property))));
+    GetWorld()->GetFirstPlayerController()->ConsoleCommand(TEXT("Exit"));
+    return;
+  }
+#endif
+
   FGPropertyNode* node = PropertyManager->GetNode(TCHAR_TO_UTF8(*Property), false);
   if (node != NULL)
   {
@@ -137,7 +149,18 @@ void UJSBSimMovementComponent::CommandConsoleBatch(TArray<FString> Property, TAr
   OutValue.SetNum(Property.Num());
   for (int i = 0; i < Property.Num(); i++)
   {
-    FGPropertyNode* node = PropertyManager->GetNode(TCHAR_TO_UTF8(*(Property[i])), false);
+
+    //Property name must be alphanumeric and limited to six []-._/ special characters. This check prevents UE5 editor crash when using invalid characters.
+  #if WITH_EDITOR 
+    if (!std::regex_match((TCHAR_TO_UTF8(*Property[i])), std::regex("^[a-zA-Z0-9\\[\\]\\-._/]+$")))
+    {
+      FMessageLog("PIE").Error()->AddToken(FTextToken::Create(FText::FromString(FString::Printf(TEXT("%s: JSBSim Command Console Blueprint Node Error: *%s* Property name must be alphanumeric and limited to these []-._/ six characters. Do not use parentheses *(RW)* in your property name"), *this->GetOwner()->GetName(), *Property[i]))));
+      GetWorld()->GetFirstPlayerController()->ConsoleCommand(TEXT("Exit"));
+      return;
+    }
+  #endif
+
+    FGPropertyNode* node = PropertyManager->GetNode(TCHAR_TO_UTF8(*Property[i]), false);
     if (node != NULL)
     {
       //we skip setting values by using blank InValue.
@@ -155,6 +178,41 @@ void UJSBSimMovementComponent::CommandConsoleBatch(TArray<FString> Property, TAr
   //{
   //  return;
   //}
+}
+
+void UJSBSimMovementComponent::SetWind(FSimpleWindState WindState)
+{
+    auto ConvertUnrealWindModeToFGWindMode = [](ETurbType Unreal) {
+        switch (Unreal)
+        {
+        case ETurbType::None:
+            return JSBSim::FGWinds::ttNone;
+            break;
+        case ETurbType::Standard:
+            return JSBSim::FGWinds::ttStandard;
+            break;
+        case ETurbType::Culp:
+            return JSBSim::FGWinds::ttCulp;
+            break;
+        case ETurbType::Milspec:
+            return JSBSim::FGWinds::ttMilspec;
+            break;
+        case ETurbType::Tustin:
+            return JSBSim::FGWinds::ttTustin;
+            break;
+        default:
+            break;
+        }
+        return JSBSim::FGWinds::ttNone;
+        };
+    if (Winds)
+    {
+        Winds->SetTurbType(ConvertUnrealWindModeToFGWindMode(WindState.TurbType));
+        Winds->SetTurbGain(WindState.TurbGain);
+        Winds->SetTurbRate(WindState.TurbRate);
+        Winds->SetWindNED(*(FGColumnVector3*)&WindState.WindNED);
+        Winds->SetProbabilityOfExceedence(WindState.ProbabilityOfExceedence);
+    }
 }
 
 
@@ -318,8 +376,16 @@ void UJSBSimMovementComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
         // Update the ForwardHorizontal vector used for the PFD
         AircraftState.UEForwardHorizontal = ENUTransform.TransformVector(ECEFForwardHorizontal);
 
-        // Apply the transform to the Parent actor			
-        Parent->SetActorLocationAndRotation(EngineLocation, EngineRotationQuat);
+        // Apply the transform to the Parent actor
+        if (EngineLocation.ContainsNaN() || EngineRotationQuat.ContainsNaN())
+        {
+            CrashedEvent();
+        }
+        else
+        {
+            Parent->SetActorLocationAndRotation(EngineLocation, EngineRotationQuat);
+
+        }
       }
 
       // Basic debugging string and symbols
@@ -512,6 +578,7 @@ void UJSBSimMovementComponent::PrepareJSBSim()
   if (bStartWithGearDown)
   {
     FCS->SetGearPos(1.0);
+    Commands.GearDown = 1.0;
   }
   else
   {
@@ -700,9 +767,7 @@ void UJSBSimMovementComponent::CopyFromJSBSim()
   AircraftState.AltitudeAGLFt = Propagate->GetDistanceAGL();
   // force a sim crashed if crashed (altitude AGL < 0)
   if (AircraftState.AltitudeAGLFt < -10.0 || AircraftState.AltitudeASLFt < -10.0) {
-    Exec->SuspendIntegration();
-    AircraftState.Crashed = true;
-    AircraftCrashed.Broadcast();
+      CrashedEvent();
   }
 
   // Copy the fuel levels from JSBSim if fuel
@@ -1050,6 +1115,13 @@ void UJSBSimMovementComponent::GetEnginesStates()
 }
 
 /////////// Logging and Debugging Methods
+
+void UJSBSimMovementComponent::CrashedEvent()
+{
+    Exec->SuspendIntegration();
+    AircraftState.Crashed = true;
+    AircraftCrashed.Broadcast();
+}
 
 void UJSBSimMovementComponent::LogInitialization()
 {
