@@ -116,6 +116,9 @@ public:
   virtual ~FGLogging() { Flush(); }
   FGLogging& operator<<(const char* message) { buffer << message ; return *this; }
   FGLogging& operator<<(const std::string& message) { buffer << message ; return *this; }
+  // Operator for ints and anonymous enums
+  FGLogging& operator<<(int value) { buffer << value; return *this; }
+  // Operator for other numerical types
   template<typename T, typename = std::enable_if_t<std::is_arithmetic<T>::value>>
     FGLogging& operator<<(T value) { buffer << value; return *this; }
   FGLogging& operator<<(std::ostream& (*manipulator)(std::ostream&)) { buffer << manipulator; return *this; }
@@ -146,17 +149,17 @@ class JSBSIM_API FGLogConsole : public FGLogger
 public:
   void SetMinLevel(LogLevel level) { min_level = level; }
   void FileLocation(const std::string& filename, int line) override
-  { buffer << "\nIn file " << filename << ": line " << line << "\n"; }
+  { buffer.append("\nIn file " + filename + ": line " + std::to_string(line) + "\n"); }
   void Format(LogFormat format) override;
   void Flush(void) override;
 
   void Message(const std::string& message) override {
     if (log_level < min_level) return;
-    buffer << message;
+    buffer.append(message);
   }
 
 private:
-  std::ostringstream buffer;
+  std::string buffer;
   LogLevel min_level = LogLevel::BULK;
 };
 

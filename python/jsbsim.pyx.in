@@ -39,8 +39,7 @@ import sys
 import numpy
 
 
-
-__version__='${PROJECT_VERSION}'
+__version__: str = '${PROJECT_VERSION}'
 
 
 class BaseError(RuntimeError):
@@ -126,16 +125,23 @@ cdef class FGPropagate:
         return _convertToNumpyVec(deref(self.thisptr).GetUVW())
 
 
-cdef class FGPropertyNode:
-    """@Dox(JSBSim::FGPropertyNode)"""
+class Attribute(enum.Enum):
+    NO_ATTR = 0
+    READ = 1
+    WRITE = 2
 
-    cdef SGSharedPtr[c_FGPropertyNode] thisptr
+
+cdef class FGPropertyNode:
+    """@Dox(SGPropertyNode)"""
+
+    cdef SGSharedPtr[c_SGPropertyNode] thisptr
 
     def __bool__(self) -> bool:
         """Check if the object is initialized."""
         return self.thisptr.ptr() is not NULL
 
     def __str__(self) -> str:
+        """Print the fully qualified name of a property and its current value."""
         if self.thisptr.ptr() is not NULL:
             return f"Property '{self.get_fully_qualified_name()}' (value: {self.get_double_value()})"
         return "Uninitialized property"
@@ -152,21 +158,31 @@ cdef class FGPropertyNode:
                 raise MemoryError()
             return None
 
+    def __eq__(self, other:FGPropertyNode) -> bool:
+        """Check if the 2 nodes are pointing to the same property."""
+        return self.thisptr.ptr() == other.thisptr.ptr()
+
     def get_name(self) -> str:
-        """@Dox(JSBSim::FGPropertyNode::GetName)"""
+        """Get the node's simple name as a string."""
         self.__intercept_invalid_pointer()
-        return self.thisptr.ptr().GetName().decode()
+        return self.thisptr.ptr().getNameString().decode()
 
     def get_fully_qualified_name(self) -> str:
-        """@Dox(JSBSim::FGPropertyNode::GetFullyQualifiedName)"""
-        self.__intercept_invalid_pointer()
-        return self.thisptr.ptr().GetFullyQualifiedName().decode()
+        """Get the fully qualified name of a node.
 
-    def get_node(self, path: str, create: bool = False) -> Optional[FGPropertyNode]:
-        """@Dox(JSBSim::FGPropertyNode::GetNode)"""
+           This function is very slow, so is probably useful for debugging only."""
+        self.__intercept_invalid_pointer()
+        return GetFullyQualifiedName(self.thisptr.ptr()).decode()
+
+    def get_node(self, path: str, create: bool = False) -> Optional[SGPropertyNode]:
+        """Get a pointer to another node by relative path.
+
+           :param path: The relative path from the node.
+           :param create: True to create the node if it doesn't exist.
+           :return: The node, or None if it does not exist."""
         self.__intercept_invalid_pointer()
         node = FGPropertyNode()
-        node.thisptr = self.thisptr.ptr().GetNode(path.encode(), create)
+        node.thisptr = self.thisptr.ptr().getNode(path.encode(), create)
         return node.__validate_node_pointer(create)
 
     def get_double_value(self) -> float:
@@ -183,6 +199,17 @@ cdef class FGPropertyNode:
            :return: True if the assignment succeeded, False otherwise."""
         self.__intercept_invalid_pointer()
         return self.thisptr.ptr().setDoubleValue(value)
+
+    def get_attribute(self, attr: Attribute) -> bool:
+        """Check a single mode attribute for the property node."""
+        self.__intercept_invalid_pointer()
+        return self.thisptr.ptr().getAttribute(attr.value)
+
+    def set_attribute(self, attr: Attribute, state: bool) -> None:
+        """Set a single mode attribute for the property node."""
+        self.__intercept_invalid_pointer()
+        self.thisptr.ptr().setAttribute(attr.value ,state)
+
 
 cdef class FGPropertyManager:
     """@Dox(JSBSim::FGPropertyManager)"""
@@ -202,7 +229,7 @@ cdef class FGPropertyManager:
         if not self.thisptr:
             raise MemoryError()
 
-    def get_node(self, path: Optional[str] = None, create: bool = False) -> Optional[FGPropertyNode]:
+    def get_node(self, path: Optional[str] = None, create: bool = False) -> Optional[SGPropertyNode]:
         """@Dox(JSBSim::FGPropertyManager::GetNode)"""
         node = FGPropertyNode()
         if path is None:
@@ -373,6 +400,11 @@ cdef class FGAircraft:
     cdef __intercept_invalid_pointer(self):
         if not self.thisptr:
             raise BaseError("Object is not initialized")
+
+    def get_aircraft_name(self) -> str:
+        """@Dox(JSBSim::FGAircraft::GetAircraftName)"""
+        self.__intercept_invalid_pointer()
+        return deref(self.thisptr).GetAircraftName().decode('utf-8')
 
     def get_xyz_rp(self) -> numpy.ndarray:
         """@Dox(JSBSim::FGAircraft::GetXYZrp)"""

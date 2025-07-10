@@ -104,12 +104,10 @@ FGFDMExec::FGFDMExec(FGPropertyManager* root, std::shared_ptr<unsigned int> fdmc
   EnginePath = "engine";
   SystemsPath = "systems";
 
-  try {
-    char* num = getenv("JSBSIM_DEBUG");
-    if (num) debug_lvl = atoi(num); // set debug level
-  } catch (...) {                   // if error set to 1
+  if (const char* num = getenv("JSBSIM_DEBUG"); num != nullptr)
+    debug_lvl = strtol(num, nullptr, 0);
+  else
     debug_lvl = 1;
-  }
 
   if (!FDMctr) {
     FDMctr = std::make_shared<unsigned int>(); // Create and initialize the child FDM counter
@@ -123,22 +121,17 @@ FGFDMExec::FGFDMExec(FGPropertyManager* root, std::shared_ptr<unsigned int> fdmc
   (*FDMctr)++;       // instance. "child" instances are loaded last.
 
   if (root == nullptr)          // Then this is the root FDM
-    Root = new FGPropertyNode();
+    Root = new SGPropertyNode();
   else
     Root = root->GetNode();
 
-  FGPropertyNode* instanceRoot = Root->GetNode("fdm/jsbsim", IdFDM, true);
+  SGPropertyNode* instanceRoot = Root->getNode("fdm/jsbsim", IdFDM, true);
   instance = std::make_shared<FGPropertyManager>(instanceRoot);
 
-  try {
-    char* num = getenv("JSBSIM_DISPERSE");
-    if (num) {
-      if (atoi(num) != 0) disperse = 1;  // set dispersions on
-    }
-  } catch (...) {                        // if error set to false
-    disperse = 0;
-    FGLogging log(Log, LogLevel::WARN);
-    log << "Could not process JSBSIM_DISPERSIONS environment variable: Assumed NO dispersions." << endl;
+  if (const char* num = getenv("JSBSIM_DISPERSE");
+      num != nullptr && strtol(num, nullptr, 0) != 0)
+  {
+    disperse = 1;  // set dispersions on
   }
 
   Debug(0);
@@ -1109,7 +1102,7 @@ void FGFDMExec::BuildPropertyCatalog(struct PropertyCatalogStructure* pcs)
       if (pcs->node->getChild(i)->getAttribute(SGPropertyNode::WRITE)) access+="W";
       PropertyCatalog.push_back(pcsNew->base_string+" ("+access+")");
     } else {
-      pcsNew->node = (FGPropertyNode*)pcs->node->getChild(i);
+      pcsNew->node = pcs->node->getChild(i);
       BuildPropertyCatalog(pcsNew.get());
     }
   }

@@ -70,20 +70,27 @@ cdef extern from "simgear/structure/SGSharedPtr.hxx":
         SGSharedPtr& operator=[U](U* p)
         T* ptr() const
 
-cdef extern from "input_output/FGPropertyManager.h" namespace "JSBSim":
-    cdef cppclass c_FGPropertyNode "JSBSim::FGPropertyNode":
-        c_FGPropertyNode* GetNode(const string& path, bool create)
-        const string& GetName() const
-        const string& GetFullyQualifiedName() const
+cdef extern from "simgear/props/props.hxx" namespace "JSBSim":
+    cdef enum c_Attribute "SGPropertyNode::Attribute":
+        NO_ATTR = 0,
+        READ = 1,
+        WRITE = 2
+
+    cdef cppclass c_SGPropertyNode "SGPropertyNode":
+        c_SGPropertyNode* getNode(const string& path, bool create)
+        const string& getNameString() const
         double getDoubleValue() const
         bool setDoubleValue(double value)
+        bool getAttribute(c_Attribute attr) const
+        void setAttribute(c_Attribute attr, bool state)
 
 cdef extern from "input_output/FGPropertyManager.h" namespace "JSBSim":
+    cdef string GetFullyQualifiedName(const c_SGPropertyNode* node)
     cdef cppclass c_FGPropertyManager "JSBSim::FGPropertyManager":
         c_FGPropertyManager()
-        c_FGPropertyManager(c_FGPropertyNode* root)
-        c_FGPropertyNode* GetNode()
-        c_FGPropertyNode* GetNode(const string& path, bool create)
+        c_FGPropertyManager(c_SGPropertyNode* root)
+        c_SGPropertyNode* GetNode()
+        c_SGPropertyNode* GetNode(const string& path, bool create)
         bool HasNode(const string& path) except +convertJSBSimToPyExc
 
 cdef extern from "math/FGColumnVector3.h" namespace "JSBSim":
@@ -107,6 +114,7 @@ cdef extern from "models/FGAerodynamics.h" namespace "JSBSim":
 cdef extern from "models/FGAircraft.h" namespace "JSBSim":
     cdef cppclass c_FGAircraft "JSBSim::FGAircraft":
         c_FGAircraft(c_FGFDMExec* fdmex) except +
+        const string GetAircraftName() const
         c_FGColumnVector3& GetXYZrp()
 
 cdef extern from "models/FGAtmosphere.h" namespace "JSBSim":

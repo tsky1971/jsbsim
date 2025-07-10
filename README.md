@@ -1,9 +1,8 @@
-[![C/C++ build](https://github.com/JSBSim-Team/jsbsim/workflows/C/C++%20build/badge.svg?branch=master&event=push)](https://github.com/bcoconni/jsbsim/actions?query=workflow%3A%22C%2FC%2B%2B+build%22)
+[![C/C++ build](https://github.com/JSBSim-Team/jsbsim/actions/workflows/cpp-python-build.yml/badge.svg)](https://github.com/JSBSim-Team/jsbsim/actions/workflows/cpp-python-build.yml)
 [![PyPI](https://img.shields.io/pypi/v/jsbsim)](https://pypi.org/project/JSBSim)
 [![Conda (channel only)](https://img.shields.io/conda/vn/conda-forge/jsbsim)](https://anaconda.org/conda-forge/jsbsim)
-[![PyPI Downloads](https://static.pepy.tech/personalized-badge/jsbsim?period=total&units=international_system&left_color=grey&right_color=blue&left_text=pypi%20downloads)](https://pepy.tech/project/jsbsim)
+[![PyPI Downloads](https://static.pepy.tech/badge/jsbsim/week)](https://pepy.tech/projects/jsbsim)
 [![Downloads GitHub](https://img.shields.io/github/downloads/JSBSim-Team/jsbsim/total?label=Downloads%20GitHub)](https://github.com/JSBSim-Team/jsbsim/releases)
-[![Downloads SourceForge](https://img.shields.io/sourceforge/dt/jsbsim?label=Downloads%20SourceForge)](https://sourceforge.net/projects/jsbsim/files/)
 
 <p align="center">
 <img width="250" heigth="250" src="https://github.com/JSBSim-Team/jsbsim-logo/blob/master/logo_JSBSIM_globe.png">
@@ -26,32 +25,32 @@ Features include:
 JSBSim also includes the following bindings:
 
 * A [Python](https://www.python.org) module which provides the exact same features as the C++ library
-* A [Matlab S-Function](https://github.com/JSBSim-Team/jsbsim/blob/master/matlab) that interfaces JSBSim with [MATLAB Simulink](https://fr.mathworks.com/products/simulink.html).
-* An [Unreal Engine plugin](https://github.com/JSBSim-Team/jsbsim/blob/master/UnrealEngine/) to build a connection between the flight dynamics model from JSBSim and the entire virtual environment provided by [Unreal engine](https://www.unrealengine.com).
+* A [Matlab S-Function](https://github.com/JSBSim-Team/jsbsim/blob/master/matlab/README.md) that interfaces JSBSim with [MATLAB Simulink](https://fr.mathworks.com/products/simulink.html).
+* An [Unreal Engine plugin](https://github.com/JSBSim-Team/jsbsim/blob/master/UnrealEngine/README.md) to build a connection between the flight dynamics model from JSBSim and the entire virtual environment provided by [Unreal engine](https://www.unrealengine.com).
 
 <p align="center">
 <img src="UnrealEngine/UEReferenceApp.png">
 </p>
 
-In 2015, [NASA performed some verification check cases on 7 flight dynamics software **including JSBSim**](https://nescacademy.nasa.gov/flightsim) (the other 6 being NASA in-house software). The results showed that the 7 simulation tools *"were good enough to indicate agreement between a majority of simulation tools for all cases published. Most of the remaining differences are explained and could be reduced with further effort."*
+In 2015, [NASA performed some verification check cases on 7 flight dynamics software **including JSBSim**](https://nescacademy.nasa.gov/flightsim/2015) (the other 6 being NASA in-house software). The results showed that the 7 simulation tools *"were good enough to indicate agreement between a majority of simulation tools for all cases published. Most of the remaining differences are explained and could be reduced with further effort."*
 
 ## Applications and Usages
 
 JSBSim is used in a range of projects among which:
 
 * Unreal Engine's [Antoinette Project](https://www.unrealengine.com/en-US/blog/antoinette-project-tools-to-create-the-next-generation-of-flight-simulators): tools to create the next generation of flight simulators.
-* Flight simulation: [FlightGear](http://www.flightgear.org), [OutTerra](https://www.outerra.com/wfeatures.html), [Skybolt Engine](https://github.com/Piraxus/Skybolt)
-* SITL (Software In The Loop) Drone Autopilot testing : [ArduPilot](https://ardupilot.org/dev/docs/sitl-with-jsbsim.html), [PX4 Autopilot](https://dev.px4.io/master/en/simulation/jsbsim.html), [Paparazzi](https://wiki.paparazziuav.org/wiki/Simulation)
-* Machine Learning Aircraft control: [gym-jsbsim](https://github.com/galleon/gym-jsbsim)
-* [DARPA Virtual Air Combat Competition](https://www.darpa.mil/news-events/2019-10-21) where one of the AI went undefeated in five rounds of mock air combat against an Air Force fighter (see the [video on YouTube](https://www.youtube.com/watch?v=IOJhgC1ksNU)).
+* Flight simulation: [FlightGear](http://www.flightgear.org), [OutTerra](https://www.outerra.com), [Skybolt Engine](https://github.com/Piraxus/Skybolt)
+* SITL (Software In The Loop) Drone Autopilot testing : [ArduPilot](https://ardupilot.org/dev/docs/sitl-with-jsbsim.html), [PX4 Autopilot](https://docs.px4.io/main/en/sim_jsbsim/), [Paparazzi](https://wiki.paparazziuav.org/wiki/Simulation)
+* Machine Learning Aircraft control: [gym-jsbsim](https://github.com/Gor-Ren/gym-jsbsim)
+* [DARPA Virtual Air Combat Competition](https://www.darpa.mil/news/2019/virtual-air-combat-competition) where one of the AI went undefeated in five rounds of mock air combat against an Air Force fighter (see the [video on YouTube](https://www.youtube.com/watch?v=IOJhgC1ksNU)).
 
 ## Academic and Industry Research
 
-JSBSim is also used in academic and industry research ([more than 700 citations referenced by Google Scholar](https://scholar.google.com/scholar?&q=jsbsim) as of May 2023).
+JSBSim is also used in academic and industry research ([more than 1000 citations referenced by Google Scholar](https://scholar.google.com/scholar?&q=jsbsim) as of May 2025).
 
 In 2023 JSBSim was featured in the article ["A deep reinforcement learning control approach for high-performance aircraft"](https://link.springer.com/article/10.1007/s11071-023-08725-y) , by De Marco et al. (2023), _Nonlinear Dynamics_, an International Journal of Nonlinear Dynamics and Chaos in Engineering Systems by Springer (doi: 10.1007/s11071-023-08725-y). The open-access article is available as a PDF here [https://link.springer.com/content/pdf/10.1007/s11071-023-08725-y.pdf](https://link.springer.com/content/pdf/10.1007/s11071-023-08725-y.pdf). The work demonstrates an application of Deep Reinforcement Learning (DRL) to flight control and guidance, leveraging the JSBSim interface to MATLAB/Simulink.
 
-Another more advanced application within the field of Deep Reinforcement Learning is presented in the article ["Hierarchical Reinforcement Learning for Air Combat at DARPA's AlphaDogfight Trials"](https://ieeexplore.ieee.org/document/9950612) by A. P. Pope et al. (2023), _IEEE Transactions on Artificial Intelligence_ (doi: 10.1109/TAI.2022.3222143), featuring a hierarchical reinforcement learning approach. The trained agent was designed alongside of and competed against active fighter pilots, and ultimately defeated a graduate of the United States Air Force's F-16 Weapons Instructor Course in match play. See also the [DARPA Virtual Air Combat Competition](https://www.darpa.mil/news-events/2019-10-21).
+Another more advanced application within the field of Deep Reinforcement Learning is presented in the article ["Hierarchical Reinforcement Learning for Air Combat at DARPA's AlphaDogfight Trials"](https://ieeexplore.ieee.org/document/9950612) by A. P. Pope et al. (2023), _IEEE Transactions on Artificial Intelligence_ (doi: 10.1109/TAI.2022.3222143), featuring a hierarchical reinforcement learning approach. The trained agent was designed alongside of and competed against active fighter pilots, and ultimately defeated a graduate of the United States Air Force's F-16 Weapons Instructor Course in match play. See also the [DARPA Virtual Air Combat Competition](https://www.darpa.mil/news/2019/virtual-air-combat-competition).
 
 # User Guide
 
@@ -59,7 +58,7 @@ Another more advanced application within the field of Deep Reinforcement Learnin
 
 ### Windows
 
-A Windows installer `JSBSim-1.2.2-setup.exe` is available in the [release section](https://github.com/JSBSim-Team/jsbsim/releases/tag/v1.2.2). It installs the 2 executables along with aircraft data and some example scripts:
+A Windows installer `JSBSim-1.2.3-setup.exe` is available in the [release section](https://github.com/JSBSim-Team/jsbsim/releases/tag/v1.2.3). It installs the 2 executables along with aircraft data and some example scripts:
 
 * `JSBSim.exe` which runs FDM simulations.
 * `aeromatic.exe` which builds aircraft definitions from Question/Answer interface
@@ -70,11 +69,11 @@ The Windows installer also contains the files needed to build the JSBSim Matlab 
 
 ### Ubuntu Linux
 
-Debian packages for Ubuntu Linux "Jammy" 22.04 LTS and "Noble" 24.04 LTS for 64 bits platforms are also available in the [JSBSim project release section](https://github.com/JSBSim-Team/jsbsim/releases/tag/v1.2.2). There are 3 packages for each platform:
+Debian packages for Ubuntu Linux "Jammy" 22.04 LTS and "Noble" 24.04 LTS for 64 bits platforms are also available in the [JSBSim project release section](https://github.com/JSBSim-Team/jsbsim/releases/tag/v1.2.3). There are 3 packages for each platform:
 
-* `JSBSim_1.2.2-1471.amd64.deb` which installs the executables `JSBSim` and `aeromatic`
-* `JSBSim-devel_1.2.2-1471.amd64.deb` which installs the development resources (headers and libraries)
-* `python3-JSBSim_1.2.2-1471.amd64.deb` which installs the Python module of JSBSim
+* `JSBSim_1.2.3-1561.amd64.deb` which installs the executables `JSBSim` and `aeromatic`
+* `JSBSim-devel_1.2.3-1561.amd64.deb` which installs the development resources (headers and libraries)
+* `python3-JSBSim_1.2.3-1561.amd64.deb` which installs the Python module of JSBSim
 
 ### Python module
 
@@ -122,7 +121,7 @@ At the moment, JSBSim does not provide binaries for platforms other than Windows
 
 ### Aircraft data and example scripts
 
-JSBSim aircraft data and example scripts are automatically installed if you are using [Python wheel packages](https://github.com/bcoconni/jsbsim#python-module). Otherwise, you can get aircraft data and example scripts by downloading either the [zip package](https://github.com/JSBSim-Team/jsbsim/archive/v1.2.2.zip) or the [tar.gz package](https://github.com/JSBSim-Team/jsbsim/archive/v1.2.2.tar.gz).
+JSBSim aircraft data and example scripts are automatically installed if you are using [Python wheel packages](https://github.com/bcoconni/jsbsim#python-module). Otherwise, you can get aircraft data and example scripts by downloading either the [zip package](https://github.com/JSBSim-Team/jsbsim/archive/v1.2.3.zip) or the [tar.gz package](https://github.com/JSBSim-Team/jsbsim/archive/v1.2.3.tar.gz).
 
 ## Quick start
 
@@ -193,6 +192,18 @@ print(jsbsim.get_default_root_dir())
 ```
 
 A more elaborate example of Python code is [JSBSim.py](https://github.com/JSBSim-Team/jsbsim/blob/master/python/JSBSim.py), the Python equivalent to `JSBSim.exe`.
+
+## Python module examples
+
+The [examples/python](https://github.com/JSBSim-Team/jsbsim/tree/master/examples/python) directory contains a number of example Python based scripts embedded in Jupyter notebooks demonstrating the use of JSBSim to determine and analyse aircraft performance.
+
+- [AoA vs CAS.ipynb](https://github.com/JSBSim-Team/jsbsim/blob/master/examples/python/AoA%20vs%20CAS.ipynb) calculates and plots the AoA (Angle of Attack) versus CAS (Calibrated Air Speed) for level trim for a range in aircraft weight, altitude and cg (center of gravity).
+
+- [Trim Envelope.ipynb](https://github.com/JSBSim-Team/jsbsim/blob/master/examples/python/Trim%20Envelope.ipynb) calculates a set of trim points for an aircraft over a range of airspeeds and flight path angles. Required thrust and AoA is indicated via a colormap.
+
+- [Rudder Kick.ipynb](https://github.com/JSBSim-Team/jsbsim/blob/master/examples/python/Rudder%20Kick.ipynb) simulate a pilot performing a rudder kick test with time histories of the control inputs and sideslip angle plotted.
+
+- [Thrust Vectoring Analysis.ipynb](https://github.com/JSBSim-Team/jsbsim/blob/master/examples/python/Thrust%20Vectoring%20Analysis.ipynb) vary the thrust vector angle to determine the minimum fuel burn for cruise and climb conditions.
 
 # Contributing Source Code Changes
 
